@@ -1,19 +1,45 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const TopRestaurants = ({ topResCards }) => {
   if (!topResCards) return;
+
+  const scrollRef = useRef(null);
+
+  const scrollLeft = () => {
+    scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
+  };
   return (
     <div>
-      <div className="font-bold text-xl my-4 flex justify-between items-center">
-        <h1>{topResCards?.header?.title}</h1>
-        <div className="flex gap-2">
-          <button className="px-2 py-1 border rounded">⬅️</button>
-          <button className="px-2 py-1 border rounded">➡️</button>
+      <div className="my-4 flex justify-between items-center">
+        <div className="font-bold text-xl">
+          <h1>{topResCards?.header?.title}</h1>
+        </div>
+        <div>
+          <button
+            onClick={scrollLeft}
+            className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+          >
+            <FaChevronLeft />
+          </button>
+          <button
+            onClick={scrollRight}
+            className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+          >
+            <FaChevronRight />
+          </button>
         </div>
       </div>
 
-      <div className="flex gap-6 overflow-x-auto pb-2">
+      <div
+        ref={scrollRef}
+        className="flex gap-6 pb-2 overflow-x-auto scroll-smooth no-scrollbar"
+      >
         {topResCards?.gridElements?.infoWithStyle?.restaurants?.map((item) => (
           <Link to={`restaurant/${item.info.id}`}>
             <div

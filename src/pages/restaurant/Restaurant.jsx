@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import RestaurantMenu from "./RestaurantMenu";
 import TopPicks from "./TopPicks";
+import { fetchViaProxy } from "../../utils/api";
 
 const Restaurant = () => {
   const { id } = useParams();
@@ -13,15 +14,29 @@ const Restaurant = () => {
 
   const fetchRestaurantData = async () => {
     try {
-      const response = await fetch(
-        `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=17.4415822&lng=78.3754448&restaurantId=${id}`
-      );
-      const data = await response.json();
-      setResData(data.data);
+      const swiggyMenuAPI = `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=17.4415822&lng=78.3754448&restaurantId=${id}`;
+
+      const data = await fetchViaProxy(swiggyMenuAPI);
+      setResData(data?.data ?? {});
     } catch (error) {
       console.error("Error fetching restaurant data:", error);
     }
   };
+
+  const regularCards =
+    resData?.cards?.[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards || [];
+
+  const topPickItems = regularCards.filter(
+    (menu) =>
+      menu.card.card["@type"] ===
+      "type.googleapis.com/swiggy.presentation.food.v2.MenuCarousel"
+  );
+
+  const itemCategories = regularCards.filter(
+    (menu) =>
+      menu.card.card["@type"] ===
+      "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory"
+  );
 
   return (
     <div className="mx-25">
@@ -29,25 +44,17 @@ const Restaurant = () => {
         {resData?.cards?.[0]?.card?.card?.text}
       </h1>
 
-      <div className="mb-10">
-        <TopPicks
-          topPickItems={resData.cards?.[4].groupedCard.cardGroupMap.REGULAR.cards.filter(
-            (menu) =>
-              menu.card.card["@type"] ===
-              "type.googleapis.com/swiggy.presentation.food.v2.MenuCarousel"
-          )}
-        />
-      </div>
+      {topPickItems.length > 0 && (
+        <div className="mb-10">
+          <TopPicks topPickItems={topPickItems} />
+        </div>
+      )}
 
-      <div>
-        <RestaurantMenu
-          resMenu={resData.cards?.[4].groupedCard.cardGroupMap.REGULAR.cards.filter(
-            (menu) =>
-              menu.card.card["@type"] ===
-              "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory"
-          )}
-        />
-      </div>
+      {itemCategories.length > 0 && (
+        <div>
+          <RestaurantMenu resMenu={itemCategories} />
+        </div>
+      )}
     </div>
   );
 };

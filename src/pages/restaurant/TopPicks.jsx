@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const TopPicks = ({ topPickItems }) => {
+  if (!topPickItems) return;
+
   const scrollRef = useRef(null);
 
   const scrollLeft = () => {
@@ -16,7 +18,7 @@ const TopPicks = ({ topPickItems }) => {
     <div className="relative">
       <div className="flex justify-between gap-2 mb-2">
         <div className="text-xl font-bold">
-          <h1>{topPickItems?.[0].card.card.title}</h1>
+          <h1>{topPickItems?.[0]?.card?.card?.title}</h1>
         </div>
         <div>
           <button
@@ -38,9 +40,9 @@ const TopPicks = ({ topPickItems }) => {
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar"
       >
-        {topPickItems?.[0].card.card.carousel.map((item) => (
+        {topPickItems?.[0]?.card?.card?.carousel?.map((item) => (
           <div
-            key={item.creativeId}
+            key={item?.creativeId}
             className="relative min-w-[292px] rounded-xl"
           >
             <img
@@ -49,7 +51,7 @@ const TopPicks = ({ topPickItems }) => {
               className="rounded-xl shadow-md"
             />
 
-            {item.dish?.info?.price && (
+            {item?.dish?.info?.price && (
               <>
                 <h1
                   className={`absolute bottom-7 left-3 text-white font-semibold text-md px-2 py-1 rounded-md ${

@@ -8,7 +8,7 @@ const AppLayout = () => {
   return (
     <div>
       <Header />
-      <main className="flex-1 mx-20 py-6 mt-14">
+      <main className="flex-1 mx-20 py-6 mt-20">
         <Outlet />
       </main>
     </div>
